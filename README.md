@@ -1,4 +1,4 @@
-# भगवती प्रकाशन · Bhagwati Publication
+# भगवती प्रकाशन · Bhagwati Publications
 
 A books-only storefront with a React and TypeScript frontend and an Express API. The backend uses PostgreSQL when `DATABASE_URL` is configured and otherwise uses the local PGlite database.
 
