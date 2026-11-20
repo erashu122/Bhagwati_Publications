@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { BookChannels } from '../components/BookChannels';
 import { ArrowRight, BookOpen, ChevronRight, Search, ShoppingBag } from 'lucide-react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { BookCover } from '../components/BookCover';
+import { BookCover, hasBookCover } from '../components/BookCover';
 import { BookCard, BrowseLink } from '../components/Storefront';
 import { canOrder, formatPrice, readingPreviewKinds } from '../data/books';
 import { useCatalog } from '../catalog';
@@ -112,7 +113,7 @@ export function BookDetails({ add }: AddBook) {
       <ChevronRight size={14} aria-hidden="true" /><span aria-current="page" lang={book.language === 'Hindi' ? 'hi' : 'en'}>{book.title}</span>
     </nav>
     <section className="detail-grid">
-      <div className={'detail-cover stage-' + book.palette}><BookCover book={book} />{!book.coverImage && <p>Illustrative cover</p>}</div>
+      <div className={'detail-cover stage-' + book.palette}><BookCover book={book} />{!hasBookCover(book) && <p>Illustrative cover</p>}</div>
       <div className="detail-copy">
         <p className="eyebrow"><span className="diamond" /> {book.category}</p>
         <h1 lang={book.language === 'Hindi' ? 'hi' : 'en'}>{book.title}</h1>
@@ -129,6 +130,7 @@ export function BookDetails({ add }: AddBook) {
           <div><strong>{formatPrice(book.price)}</strong><small>Listed price</small></div>
           <button type="button" className="button primary" onClick={() => add(book.id)}><ShoppingBag size={18} aria-hidden="true" /> Add to bag</button>
         </div>}
+        <BookChannels id={book.id} title={book.title} />
         <WishlistButton id={book.id} title={book.title} />
         <p className="small-note">Final editions, pricing and availability are pending publisher confirmation.</p>
       </div>

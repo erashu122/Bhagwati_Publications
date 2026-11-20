@@ -3,6 +3,7 @@ import { matchesAuthor } from '../../../shared/content';
 import { useCatalog } from '../catalog';
 import { AuthorPortrait } from '../components/AuthorPortrait';
 import { BookCard, BrowseLink } from '../components/Storefront';
+import { AuthorGallery } from '../components/AuthorGallery';
 
 export function Author({ add }: { add: (id: string) => void }) {
   const { content, authorPhoto, books } = useCatalog();
@@ -20,6 +21,7 @@ export function Author({ add }: { add: (id: string) => void }) {
         </div>
       </div>
     </section>
+    <AuthorGallery />
     <section className="container section" aria-label="Books by the author">
       <div className="section-heading"><div><p className="eyebrow"><span className="diamond" /> FROM THE COLLECTION</p><h2>Books by {content.authorName}</h2></div></div>
       {titles.length > 0

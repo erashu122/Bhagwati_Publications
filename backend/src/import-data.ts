@@ -21,7 +21,9 @@ const tables = [
   { table: 'notifications', key: 'id', type: 'text', optional: true },
   { table: 'notification_reads', key: 'id', type: 'uuid', optional: true },
   { table: 'ebook_files', key: 'book_id', type: 'text', optional: true },
-  { table: 'book_reviews', key: 'id', type: 'uuid', optional: true }
+  { table: 'book_reviews', key: 'id', type: 'uuid', optional: true },
+  { table: 'author_gallery', key: 'id', type: 'uuid', optional: true },
+  { table: 'book_channels', key: 'book_id', type: 'text', optional: true }
 ] as const;
 
 type Table = typeof tables[number];

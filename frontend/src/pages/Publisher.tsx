@@ -10,6 +10,7 @@ import { CatalogAdmin } from './CatalogAdmin';
 import { AdminOverview } from './AdminOverview';
 import { PublisherAnnouncements, PublisherCoupons } from './PublisherUpdates';
 import { PublisherEbooks, PublisherPayment, PublisherReviews } from './PublisherCommerce';
+import { PublisherGallery, PublisherBookChannels, PublisherPaymentsSetup } from './PublisherGallery';
 
 type PublisherData = { orders: StoreOrder[]; enquiries: Enquiry[] };
 const sections = [
@@ -20,11 +21,14 @@ const sections = [
   { id: 'reviews', label: 'Reviews', icon: Star },
   { id: 'categories', label: 'Categories', icon: Tags },
   { id: 'author', label: 'Author profile', icon: UserRound },
+  { id: 'gallery', label: 'Gallery & achievements', icon: Star },
+  { id: 'buying-links', label: 'Publishers & buying links', icon: BookOpen },
+  { id: 'payment-setup', label: 'Payment setup', icon: Package },
   { id: 'content', label: 'Store content', icon: FileText },
   { id: 'orders', label: 'Orders', icon: ClipboardList },
   { id: 'coupons', label: 'Coupons', icon: Tag },
   { id: 'announcements', label: 'Announcements', icon: Bell },
-  { id: 'enquiries', label: 'Enquiries', icon: Mail }
+  { id: 'enquiries', label: 'Contact messages', icon: Mail }
 ] as const;
 
 const enquiryEmailLabels = {
@@ -151,7 +155,12 @@ function Operations({ enquiries, initialStatus }: { enquiries: boolean; initialS
     {error && <p className="form-error" role="alert">{error}</p>}
     {!data ? (!error && <p role="status">Loading the dashboard…</p>) : enquiries
       ? <div className="account-orders">{messages.length === 0 && <p>No enquiries found.</p>}{messages.map(enquiry => <article className="order-card enquiry" key={enquiry.id}>
-        <h3>{enquiry.fullName}</h3><p>{enquiry.email} · {new Date(enquiry.createdAt).toLocaleDateString('en-IN')}</p><p>{enquiry.message}</p>
+        <h3>{enquiry.fullName} {!enquiry.readAt && <span className="status-pill">New message</span>}</h3><p>{enquiry.email} · {new Date(enquiry.createdAt).toLocaleDateString('en-IN')}</p><p className="gallery-caption">{enquiry.message}</p>
+        {!enquiry.readAt && <button className="button secondary" type="button" disabled={busy} onClick={async () => {
+          setBusy(true); setError('');
+          try { await storeRequest('/publisher/enquiries/' + enquiry.id + '/read', 'PATCH', {}); setReload(v => v + 1); }
+          catch (e) { setError(errorMessage(e)); } finally { setBusy(false); }
+        }}>Mark read</button>}
         {enquiry.bulkDetails && <p><strong>Bulk order</strong> · {enquiry.bulkDetails.quantity} copies · {enquiry.bulkDetails.city}
           {enquiry.bulkDetails.neededBy && <> · Needed by {enquiry.bulkDetails.neededBy}</>}</p>}
         <p className="small-note">{enquiry.emailStatus ? enquiryEmailLabels[enquiry.emailStatus] : 'No email recorded'}</p>
@@ -203,6 +212,9 @@ export function Publisher() {
       </aside>
       <section className="admin-content" aria-label="Admin workspace">
         {section === 'overview' ? <AdminOverview />
+          : section === 'gallery' ? <PublisherGallery />
+          : section === 'buying-links' ? <PublisherBookChannels />
+          : section === 'payment-setup' ? <PublisherPaymentsSetup />
           : section === 'coupons' ? <PublisherCoupons />
           : section === 'announcements' ? <PublisherAnnouncements />
           : section === 'ebooks' ? <PublisherEbooks />

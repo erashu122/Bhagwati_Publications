@@ -80,6 +80,7 @@ export type StoreOrder = Order & { email: string; fullName: string };
 
 export type EnquiryEmailStatus = 'accepted' | 'failed' | 'unconfirmed';
 export type Enquiry = {
+  readAt?: string | null;
   id: string;
   fullName: string;
   email: string;
@@ -92,6 +93,7 @@ export type Enquiry = {
 export type EnquirySettings = { recipient: string; mailConfigured: boolean };
 
 export type PublisherOverview = {
+  unreadEnquiries: number;
   publishedBooks: number;
   pendingOrders: number;
   lowStockBooks: number;

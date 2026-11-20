@@ -11,7 +11,7 @@ const metrics = [
   { key: 'publishedBooks', label: 'Published books', icon: BookOpen, path: 'books' },
   { key: 'pendingOrders', label: 'Awaiting confirmation', icon: ClipboardList, path: 'orders&status=submitted' },
   { key: 'lowStockBooks', label: 'Low stock titles', icon: Package, path: 'books&stock=low' },
-  { key: 'enquiries', label: 'Total enquiries', icon: Mail, path: 'enquiries' }
+  { key: 'unreadEnquiries', label: 'New contact messages', icon: Mail, path: 'enquiries' }
 ] as const;
 
 const date = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' });
@@ -53,6 +53,7 @@ export function AdminOverview() {
       <div className="inline-actions">
         <Link className="button primary" to="/admin?tab=books&action=add"><Plus size={18} aria-hidden="true" /> Add book</Link>
         <Link className="button secondary" to="/admin?tab=author"><UserRound size={17} aria-hidden="true" /> Edit author</Link>
+        <Link className="button secondary" to="/admin?tab=gallery">Manage gallery</Link>
       </div>
     </div>
     {data && <div className="admin-overview-panels">

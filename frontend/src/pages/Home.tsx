@@ -2,6 +2,7 @@ import { ArrowDownRight, ArrowRight, BookOpen, BriefcaseBusiness, Cpu, Feather, 
 import { Link, useNavigate } from 'react-router-dom';
 import { BookCover } from '../components/BookCover';
 import { PublisherLogo } from '../components/PublisherLogo';
+import { AuthorGallery } from '../components/AuthorGallery';
 import { BookCard, BrowseLink } from '../components/Storefront';
 import { useCatalog } from '../catalog';
 import { AuthorPortrait } from '../components/AuthorPortrait';
@@ -102,6 +103,7 @@ export function Home({ add }: { add: (id: string) => void }) {
         </div>
       </div>
     </section>
+    <AuthorGallery compact />
     <section className="closing"><div className="container closing-inner">
       <div><p className="eyebrow">FIND YOUR NEXT READ</p><h2>Which book will you open next?</h2></div>
       <BrowseLink>Browse all books</BrowseLink>

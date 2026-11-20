@@ -127,6 +127,23 @@ export async function initializeSchema(tx: DatabaseExecutor, seed = true) {
     ALTER TABLE orders ADD COLUMN payment_expires_at TIMESTAMPTZ;
     CREATE INDEX orders_checkout_expiry_idx ON orders (payment_expires_at) WHERE status = 'awaiting_payment';
   `);
+  const gallery = await tx.query("INSERT INTO store_migrations (name) VALUES ('author-gallery-v1') ON CONFLICT DO NOTHING RETURNING name");
+  if (gallery.rows.length) await tx.exec(`
+    CREATE TABLE IF NOT EXISTS author_gallery (
+      id UUID PRIMARY KEY, title TEXT NOT NULL, caption TEXT NOT NULL DEFAULT '',
+      kind TEXT NOT NULL CHECK(kind IN ('achievement','launch','gallery')),
+      event_date DATE, revealed_by TEXT NOT NULL DEFAULT '', published BOOLEAN NOT NULL DEFAULT FALSE,
+      revision INTEGER NOT NULL DEFAULT 1, image_type TEXT, image_bytes BYTEA,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CHECK(image_bytes IS NULL OR octet_length(image_bytes) BETWEEN 12 AND 1048576)
+    );
+    CREATE TABLE IF NOT EXISTS book_channels (
+      book_id TEXT PRIMARY KEY REFERENCES books(id) ON DELETE CASCADE,
+      publisher TEXT NOT NULL DEFAULT '', publisher_url TEXT NOT NULL DEFAULT '', amazon_url TEXT NOT NULL DEFAULT ''
+    );
+    ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS read_at TIMESTAMPTZ;
+  `);
+
 }
 
 export async function lockPostgresSchema(tx: DatabaseExecutor) {

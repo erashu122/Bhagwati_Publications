@@ -17,6 +17,7 @@ import { couponCode, customerFeatures, notifyOrder } from './customer-features.t
 import { openDatabase } from './database.ts';
 import { checkoutConfig, expireUnstartedCheckouts, paymentsRouter, razorpayWebhook } from './payments.ts';
 import { orderDocument } from './invoice.ts';
+import { authorGalleryRouter } from './author-gallery.ts';
 import { readingRouter } from './reading.ts';
 import { adminAccountEmail, adminLogin, cookieName, digest, passwordHash, sessionLength, sessionToken, verifyPassword } from './security.ts';
 import { addressField, cartEntries, emailField, field, passwordField, phoneField, record, RequestError, uuidField } from './validation.ts';
@@ -60,13 +61,15 @@ app.use((_request, response, next) => {
 api.use((request, response, next) => {
   response.set('Cache-Control', 'no-store');
   const pdfUpload = request.method === 'PATCH' && /^\/publisher\/ebooks\/[^/]+$/.test(request.path) && request.is('application/pdf');
+  const galleryUpload = request.method === 'PATCH' && /^\/publisher\/author-gallery\/[^/]+\/image$/.test(request.path) && request.is(['image/jpeg', 'image/png', 'image/webp']);
   if (['POST', 'PATCH', 'DELETE'].includes(request.method) &&
-      (request.get('X-Store-Request') !== '1' || request.get('Sec-Fetch-Site') === 'cross-site' || (!request.is('application/json') && !pdfUpload))) {
+      (request.get('X-Store-Request') !== '1' || request.get('Sec-Fetch-Site') === 'cross-site' || (!request.is('application/json') && !pdfUpload && !galleryUpload))) {
     throw new RequestError(403, 'Open the store directly and try again.');
   }
   next();
 });
 api.use(catalogRouter(db, request => requireCustomer(request, true)));
+api.use(authorGalleryRouter(db, request => requireCustomer(request, true)));
 api.use(readingRouter(db, signedInCustomer, requireCustomer));
 api.use(express.json({ limit: '24kb' }));
 api.use(customerFeatures(db, signedInCustomer, requireCustomer));
@@ -435,6 +438,7 @@ api.get('/publisher/overview', async (request, response) => {
       SELECT (SELECT COUNT(*)::integer FROM books WHERE published) AS "publishedBooks",
              (SELECT COUNT(*)::integer FROM orders WHERE status = 'submitted') AS "pendingOrders",
              (SELECT COUNT(*)::integer FROM books WHERE published AND stock <= 5) AS "lowStockBooks",
+             (SELECT COUNT(*)::integer FROM enquiries WHERE read_at IS NULL) AS "unreadEnquiries",
              (SELECT COUNT(*)::integer FROM enquiries) AS enquiries
     `);
     const { rows: recentOrders } = await tx.query<PublisherOverview['recentOrders'][number]>(`

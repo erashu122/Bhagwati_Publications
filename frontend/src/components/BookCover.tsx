@@ -36,6 +36,8 @@ const suppliedCovers = new Map([
   ['practical-e-auctions', '/covers/practical-e-auctions.jpg']
 ]);
 
+export const hasBookCover = (book: Book) => Boolean(book.coverImage || suppliedCovers.has(book.id));
+
 export function BookCover({ book }: { book: Book }) {
   const cover = book.coverImage || suppliedCovers.get(book.id);
   if (cover) {

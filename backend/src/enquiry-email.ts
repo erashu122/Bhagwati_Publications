@@ -2,7 +2,7 @@ import type { Enquiry, EnquiryEmailStatus, EnquirySettings } from '../../shared/
 import type { DatabaseExecutor } from './database-driver.ts';
 import { RequestError } from './validation.ts';
 
-export const enquiryFields = 'id, full_name AS "fullName", email, message, created_at AS "createdAt", email_status AS "emailStatus", bulk_details AS "bulkDetails"';
+export const enquiryFields = 'id, full_name AS "fullName", email, message, created_at AS "createdAt", email_status AS "emailStatus", bulk_details AS "bulkDetails", read_at AS "readAt"';
 
 export async function enquirySettings(db: DatabaseExecutor): Promise<EnquirySettings> {
   const { rows: [settings] } = await db.query<{ recipient: string }>('SELECT recipient FROM enquiry_settings WHERE singleton = TRUE');
