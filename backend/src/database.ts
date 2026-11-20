@@ -144,6 +144,15 @@ export async function initializeSchema(tx: DatabaseExecutor, seed = true) {
     ALTER TABLE enquiries ADD COLUMN IF NOT EXISTS read_at TIMESTAMPTZ;
   `);
 
+  const portrait = await tx.query("INSERT INTO store_migrations (name) VALUES ('author-gallery-portrait-v1') ON CONFLICT DO NOTHING RETURNING name");
+  if (portrait.rows.length) await tx.exec(`
+    INSERT INTO author_gallery(id,title,caption,kind,published,image_type,image_bytes)
+      SELECT gen_random_uuid(), s.content->>'authorName', 'Author portrait from the publisher profile.',
+             'gallery', TRUE, p.media_type, p.bytes
+        FROM author_portrait p JOIN store_content s USING(singleton)
+       WHERE NOT EXISTS(SELECT 1 FROM author_gallery)
+         AND length(s.content->>'authorName') BETWEEN 1 AND 180;
+  `);
 }
 
 export async function lockPostgresSchema(tx: DatabaseExecutor) {

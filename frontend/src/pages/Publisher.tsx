@@ -91,6 +91,14 @@ function Operations({ enquiries, initialStatus }: { enquiries: boolean; initialS
   const search = query.trim().toLowerCase();
 
   useEffect(() => {
+    if (!enquiries) return;
+    const timer = window.setInterval(() => {
+      if (!busy && document.visibilityState === 'visible') setReload(value => value + 1);
+    }, 30000);
+    return () => window.clearInterval(timer);
+  }, [enquiries, busy]);
+
+  useEffect(() => {
     let current = true;
     setError('');
     setBusy(true);

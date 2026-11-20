@@ -22,6 +22,12 @@ export function AdminOverview() {
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') setAttempt(value => value + 1);
+    }, 30000);
+    return () => window.clearInterval(timer);
+  }, []);
+  useEffect(() => {
     let active = true;
     setLoading(true);
     setError('');
